@@ -3,6 +3,7 @@ import pygame
 from player import Player
 from enemy import Enemy
 from engine import PhysicsEngine
+from sound import SoundManager
 
 # ======================= #
 ########## TO DO ##########
@@ -28,6 +29,9 @@ class GameMaster:
         self.dir = pygame.Vector2(0, 0)
         self.enemy = enemy
 
+        self.music = SoundManager()
+        self.music.playBgkMusic("./song.mp3")
+
     def _drawObjects(self) -> None:
         self.player.draw()
         self.enemy.draw()
@@ -37,16 +41,25 @@ class GameMaster:
         self.engine.applyGravity(self.player)
         self.enemy.update()
 
+    # Call animation engine
+    def _updatePlayer(self) -> None:
+        self.player.decideState()
+        self.player.animatePlayer()
+
     def _eventTracker(self) -> None:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.running = False
             if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
+                self.player.jumpPressed = True
                 self.engine.jump(self.player)
-    
+            if event.type == pygame.KEYUP and event.key == pygame.K_SPACE:
+                self.player.jumpPressed = False
+                
     # Interact with the env.
     def update(self):
         self._drawObjects()
+        self._updatePlayer()
         self._updateEnv()
         self._eventTracker()
 

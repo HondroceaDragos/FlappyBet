@@ -3,7 +3,6 @@ import pygame
 from player import Player
 from enemy import Enemy
 from engine import PhysicsEngine
-from sound import SoundManager
 
 # ======================= #
 ########## TO DO ##########

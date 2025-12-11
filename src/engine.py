@@ -18,18 +18,17 @@ class PhysicsEngine:
     # Fields specifically declared for access modifiers (private)
     _dt: float = 0
     _clock = pygame.time.Clock()
-    _forceCoeff: float = 0
 
     def __init__(self, screen = pygame.Surface,
                  dt: float = 0,
-                 forceCoeff: float = 300.0):
+                 frameRate: int = 0):
         self.screen = screen
         self._dt = dt
-        self._forceCoeff = forceCoeff
+        self._frameRate = frameRate
 
     # Game is capped at 60 fps
     def updateDt(self) -> None:
-        self._dt = self._clock.tick(60) / 1000
+        self._dt = self._clock.tick(self._frameRate) / 1000
 
     # Private method for out of bounds resets
     def _clampPlayer(self, player: Player) -> None:

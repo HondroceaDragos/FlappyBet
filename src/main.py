@@ -9,6 +9,7 @@ from player import Player
 from enemy import Enemy
 from engine import PhysicsEngine
 from master import GameMaster
+from screen import ScreenComputer
 
 import sys
 
@@ -29,15 +30,17 @@ if len(sys.argv) < 2:
     print("-g: Start from gameplay section\n")
     sys.exit()
 
-# Start the game window
 pygame.init()
-screen = pygame.display.set_mode((1280, 720))
+
+# Start the game window
+screen, vScreen = ScreenComputer.getScreen()
+vScreen = ScreenComputer.rescaleVirtualScreen(screen)
 
 # Initialize the master 
-player = Player(screen = screen, radius = 40)
-engine = PhysicsEngine(screen = screen, dt = 0, forceCoeff = 275)
-enemy = Enemy(screen = screen)
-gameMaster = GameMaster(screen, player, engine, enemy, True)
+player = Player(screen = vScreen, radius = 40)
+engine = PhysicsEngine(screen = vScreen, dt = 0, frameRate = 60)
+enemy = Enemy(screen = vScreen)
+gameMaster = GameMaster(vScreen, player, engine, enemy, True)
 
 # Debugger state selection
 match sys.argv[1]:
@@ -48,7 +51,12 @@ match sys.argv[1]:
 
 # Heart of the game
 while gameMaster.running:
+    # Display 1280x720 on all displays
+    screen.blit(vScreen, ScreenComputer.getOffset(screen))
+
+    # Handle events
     gameMaster.update()
+
     pygame.display.flip()
 
 pygame.quit()

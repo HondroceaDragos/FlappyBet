@@ -7,8 +7,11 @@ import pygame
 
 from entities import Player
 from entities import Enemy
+
 from core import PhysicsEngine
+
 from gameplay import GameMaster
+
 from ui import ScreenComputer
 
 import sys
@@ -22,6 +25,8 @@ import sys
 # Think about settings in the future (not just 1280 by 720 - 60 fps)
 
 # Add slots class
+
+# Migth want to store screen parameters to not call get_... all the time 
 
 # Debugger usage prompt
 if len(sys.argv) < 2:
@@ -40,14 +45,14 @@ vScreen = ScreenComputer.rescaleVirtualScreen(screen)
 player = Player(screen = vScreen, radius = 40)
 engine = PhysicsEngine(screen = vScreen, dt = 0, frameRate = 60)
 enemy = Enemy(screen = vScreen)
-gameMaster = GameMaster(vScreen, player, engine, enemy, True)
+gameMaster = GameMaster(vScreen, engine, player, enemy, True)
 
 # Debugger state selection
 match sys.argv[1]:
     case "-m":
-        gameMaster.currState = "mainMenu"
+        gameMaster.switchGameState("mainMenu")
     case "-g":
-        gameMaster.currState = "gameInProgress"
+        gameMaster.switchGameState("gameInProgress")
 
 # Heart of the game
 while gameMaster.running:

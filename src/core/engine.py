@@ -33,6 +33,7 @@ class PhysicsEngine:
     # Private method for out of bounds resets
     def _clampPlayer(self, player: Player) -> None:
         player.currPos.y = round(player.currPos.y)
+
         # Down
         if player.currPos.y > self.screen.get_height() - player._radius:
             player.currPos.y = self.screen.get_height() - player._radius
@@ -44,7 +45,7 @@ class PhysicsEngine:
             if player.velocity.y < 0:
                 player.velocity.y = 0
 
-    # Private method for gravity simulation
+    # Public* method for gravity simulation
     def applyGravity(self, player: Player) -> None:
         if player.currPos.y != self.screen.get_height() + player._radius:
             player.velocity.y += 9.81 * self._dt * 95
@@ -57,18 +58,20 @@ class PhysicsEngine:
         self._clampPlayer(player)
     
     # Define a collision method for circle - to - rectangle
-    def _circToRectCol(self, circleBox: pygame.Vector2,
-                       radius: float,
+    def _circToRectCol(self, circleCenter: pygame.Vector2,
+                       circleRadius: float,
                        rect: pygame.Rect) -> bool:
-        dx = circleBox.x - max(rect.left, min(circleBox.x, rect.right))
-        dy = circleBox.y - max(rect.top, min(circleBox.y, rect.bottom))
+        dx = circleCenter.x - max(rect.left, min(circleCenter.x, rect.right))
+        dy = circleCenter.y - max(rect.top, min(circleCenter.y, rect.bottom))
 
-        return (dx * dx + dy * dy) < (radius * radius)
+        return (dx * dx + dy * dy) < (circleRadius * circleRadius)
 
-    # Handle collisions
+    # Handle collisions - should we store hitboxes in the class?
     def checkCollision(self, player: Player, enemy: Enemy) -> bool:
-        # With an enemy - pipe
-        enemyHitbox = pygame.Rect(enemy.currPos.x, enemy.currPos.y, 70, 200)
+        # Player 'hitbox'
+        playerCenter, playerRadius = player.getHitbox()
 
-        # 'Player' hitbox
-        return self._circToRectCol(player.currPos, player._radius, enemyHitbox)
+        # Enemy 'hitbox'
+        enemyHitbox = enemy.getHitbox()
+
+        return self._circToRectCol(playerCenter, playerRadius, enemyHitbox)

@@ -17,13 +17,17 @@ from core import GameInProgressState
 ### Notes ###
 # None methods could have a return type (error checking)
 
+
 # 'GameMaster' class declaration and definition
 class GameMaster:
-    def __init__(self, screen = pygame.Surface,
-                 engine: PhysicsEngine = None,
-                 player: Player = None,
-                 enemy: Enemy = None,
-                 running: bool = False):
+    def __init__(
+        self,
+        screen=pygame.Surface,
+        engine: PhysicsEngine = None,
+        player: Player = None,
+        enemy: Enemy = None,
+        running: bool = False,
+    ):
         self.screen = screen
         self.engine = engine
 
@@ -35,7 +39,7 @@ class GameMaster:
         # Load all possible states into the master
         self.states = {
             "mainMenu": MainMenuState(self),
-            "gameInProgress": GameInProgressState(self)
+            "gameInProgress": GameInProgressState(self),
         }
 
         # Start from main menu
@@ -44,7 +48,7 @@ class GameMaster:
     # Action may cause game switches
     def switchGameState(self, state: str) -> None:
         self._currState = self.states[state]
-                
+
     # Interact with the env.
     def update(self) -> None:
         events = pygame.event.get()
@@ -56,4 +60,3 @@ class GameMaster:
         for event in events:
             if event.type == pygame.QUIT:
                 self.running = False
-        

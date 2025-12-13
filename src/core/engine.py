@@ -13,15 +13,14 @@ import pygame
 from entities import Player
 from entities import Enemy
 
+
 # 'Engine' declaration and definition
 class PhysicsEngine:
     # Fields specifically declared for access modifiers (private)
     _dt: float = 0
     _clock = pygame.time.Clock()
 
-    def __init__(self, screen = pygame.Surface,
-                 dt: float = 0,
-                 frameRate: int = 0):
+    def __init__(self, screen=pygame.Surface, dt: float = 0, frameRate: int = 0):
         self.screen = screen
         self._dt = dt
         self._frameRate = frameRate
@@ -56,11 +55,11 @@ class PhysicsEngine:
     def jump(self, player: Player) -> None:
         player.velocity.y = -355
         self._clampPlayer(player)
-    
+
     # Define a collision method for circle - to - rectangle
-    def _circToRectCol(self, circleCenter: pygame.Vector2,
-                       circleRadius: float,
-                       rect: pygame.Rect) -> bool:
+    def _circToRectCol(
+        self, circleCenter: pygame.Vector2, circleRadius: float, rect: pygame.Rect
+    ) -> bool:
         dx = circleCenter.x - max(rect.left, min(circleCenter.x, rect.right))
         dy = circleCenter.y - max(rect.top, min(circleCenter.y, rect.bottom))
 

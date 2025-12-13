@@ -1,6 +1,7 @@
 import pygame
 from ._abs_state import absState
 
+
 # 'GameInProgressState' class declaration and definition
 class GameInProgressState(absState):
     def handler(self, events: list[pygame.event.Event]) -> None:
@@ -12,9 +13,9 @@ class GameInProgressState(absState):
                         self.master.engine.jump(self.master.player)
                     case pygame.K_ESCAPE:
                         self.master.switchGameState("mainMenu")
-            
+
             if event.type == pygame.KEYUP and event.key == pygame.K_SPACE:
-                    self.master.player.jumpPressed = False
+                self.master.player.jumpPressed = False
 
     def draw(self) -> None:
         self.master.screen.fill("white")
@@ -40,5 +41,7 @@ class GameInProgressState(absState):
 
         # Sanity check for collision - will be moved
         if self.master.engine.checkCollision(self.master.player, self.master.enemy):
-            self.master.player.currPos = pygame.Vector2(self.master.screen.get_width() / 2, self.master.screen.get_height())
+            self.master.player.currPos = pygame.Vector2(
+                self.master.screen.get_width() / 2, self.master.screen.get_height()
+            )
             self.master.player.velocity.y = 0

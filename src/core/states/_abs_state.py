@@ -1,6 +1,7 @@
 import pygame
 from abc import ABC, abstractmethod
 
+
 # 'absState' abstract class declaration and definition
 class absState(ABC):
     # All states interact with the master

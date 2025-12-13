@@ -1,7 +1,7 @@
 import os
 
 # Hide support prompt in console
-os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "1"
+os.environ["PYGAME_HIDE_SUPPORT_PROMPT"] = "1"
 
 import pygame
 
@@ -26,7 +26,7 @@ import sys
 
 # Add slots class
 
-# Migth want to store screen parameters to not call get_... all the time 
+# Migth want to store screen parameters to not call get_... all the time
 
 # Debugger usage prompt
 if len(sys.argv) < 2:
@@ -41,10 +41,10 @@ pygame.init()
 screen, vScreen = ScreenComputer.getScreen()
 vScreen = ScreenComputer.rescaleVirtualScreen(screen)
 
-# Initialize the master 
-player = Player(screen = vScreen, radius = 40)
-engine = PhysicsEngine(screen = vScreen, dt = 0, frameRate = 60)
-enemy = Enemy(screen = vScreen)
+# Initialize the master
+player = Player(screen=vScreen, radius=40)
+engine = PhysicsEngine(screen=vScreen, dt=0, frameRate=60)
+enemy = Enemy(screen=vScreen)
 gameMaster = GameMaster(vScreen, engine, player, enemy, True)
 
 # Debugger state selection

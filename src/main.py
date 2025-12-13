@@ -5,11 +5,11 @@ os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "1"
 
 import pygame
 
-from player import Player
-from enemy import Enemy
-from engine import PhysicsEngine
-from master import GameMaster
-from screen import ScreenComputer
+from entities import Player
+from entities import Enemy
+from core import PhysicsEngine
+from gameplay import GameMaster
+from ui import ScreenComputer
 
 import sys
 

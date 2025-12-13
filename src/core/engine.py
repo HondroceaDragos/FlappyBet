@@ -10,8 +10,8 @@ import pygame
 ### Notes ###
 # 'draw' method could have a return type (error checking)
 
-from player import Player
-from enemy import Enemy
+from entities import Player
+from entities import Enemy
 
 # 'Engine' declaration and definition
 class PhysicsEngine:

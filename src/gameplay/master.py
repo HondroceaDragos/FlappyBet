@@ -1,8 +1,9 @@
 import pygame
 
-from player import Player
-from enemy import Enemy
-from engine import PhysicsEngine
+from entities import Player
+from entities import Enemy
+
+from core import PhysicsEngine
 
 # ======================= #
 ########## TO DO ##########

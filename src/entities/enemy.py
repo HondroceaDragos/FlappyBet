@@ -19,6 +19,19 @@ class Enemy:
         self.screen = screen
         self.currPos = pygame.Vector2(screen.get_width() + 20, -20)
 
+    # NEW - hitbox integration    
+    @property
+    def _hitbox(self):
+        return pygame.Rect(
+            self.currPos.x,
+            self.currPos.y,
+            70,
+            200
+        )
+
+    def getHitbox(self) -> pygame.Rect:
+        return self._hitbox
+
     # Pipes move automatically
     def update(self):
         self.currPos.x -= 20

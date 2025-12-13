@@ -62,6 +62,14 @@ class Player:
         else:
             self.currPos = currPos
 
+    # NEW - hitbox integration
+    @property
+    def _hitbox(self):
+        return (self.currPos, self._radius)
+    
+    def getHitbox(self):
+        return self._hitbox
+
     # Change sprites
     def changeSprite(self, name: str) -> None:
          self._currentSprite = self.sprites[name]

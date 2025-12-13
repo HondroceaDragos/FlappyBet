@@ -1,6 +1,7 @@
 import pygame
 from ._abs_state import absState
 
+
 # 'MainMenuState' class declaration and definition
 class MainMenuState(absState):
     # @Override
@@ -12,14 +13,15 @@ class MainMenuState(absState):
     # Reset gameplay parameters - acts as new game
     def _resetGame(self) -> None:
         self.master.player.currPos = pygame.Vector2(
-                self.master.screen.get_width() / 2,
-                self.master.screen.get_height() / 2
-                )
+            self.master.screen.get_width() / 2, self.master.screen.get_height() / 2
+        )
         self.master.player.jumpPressed = False
         self.master.player.state = "IDLE"
         self.master.player.velocity = pygame.Vector2(0, 0)
 
-        self.master.enemy.currPos = pygame.Vector2(self.master.screen.get_width() + 20, -20)
+        self.master.enemy.currPos = pygame.Vector2(
+            self.master.screen.get_width() + 20, -20
+        )
 
     def update(self) -> None:
         self._resetGame()

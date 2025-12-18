@@ -6,7 +6,7 @@ os.environ["PYGAME_HIDE_SUPPORT_PROMPT"] = "1"
 import pygame
 
 from entities import Player
-from entities import Enemy
+from entities import PipeFactory
 
 from core import PhysicsEngine
 
@@ -21,7 +21,6 @@ import sys
 # ======================= #
 
 # Add a background
-# Add custom state support (right now we only have the game window) - DONE :D
 # Think about settings in the future (not just 1280 by 720 - 60 fps)
 
 # Add slots class
@@ -42,10 +41,10 @@ screen, vScreen = ScreenComputer.getScreen()
 vScreen = ScreenComputer.rescaleVirtualScreen(screen)
 
 # Initialize the master
-player = Player(screen=vScreen, radius=40)
+player = Player(screen=vScreen, radius=35)
 engine = PhysicsEngine(screen=vScreen, dt=0, frameRate=60)
-enemy = Enemy(screen=vScreen)
-gameMaster = GameMaster(vScreen, engine, player, enemy, True)
+factory = PipeFactory(screen=vScreen)
+gameMaster = GameMaster(vScreen, engine, player, factory, True)
 
 # Debugger state selection
 match sys.argv[1]:

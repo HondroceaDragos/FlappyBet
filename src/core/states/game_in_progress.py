@@ -20,12 +20,38 @@ class GameInProgressState(absState):
     def draw(self) -> None:
         self.master.screen.fill("white")
         self.master.player.draw()
-        self.master.enemy.draw()
+        for pipe in self.master.pipes:
+            pipe.draw()
 
     def _updateEnv(self) -> None:
         self.master.engine.updateDt()
         self.master.engine.applyGravity(self.master.player)
-        self.master.enemy.update()
+
+        # Create new pipes as time passes
+        self.master.factory.update(self.master.engine._dt)
+        if self.master.factory.shouldSpawn():
+            self.master.pipes.append(self.master.factory.spawn())
+
+        # Update each new pipe
+        alivePipes = []
+        for pipe in self.master.pipes:
+            pipe.update(self.master.engine._dt)
+
+            if pipe.shouldKill() is False:
+                alivePipes.append(pipe)
+
+            if self.master.engine.checkCollision(self.master.player, pipe):
+                self._resetState()
+                return
+        self.master.pipes = alivePipes
+
+    # Start new game upon death
+    def _resetState(self) -> None:
+        self.master.player.currPos = pygame.Vector2(
+            self.master.screen.get_width() / 2, self.master.screen.get_height() / 2
+        )
+        self.master.player.velocity.y = 0
+        self.master.pipes.clear()
 
     # Call animation engine
     def _updatePlayer(self) -> None:
@@ -38,10 +64,3 @@ class GameInProgressState(absState):
         self._updateEnv()
         self._updatePlayer()
         self.draw()
-
-        # Sanity check for collision - will be moved
-        if self.master.engine.checkCollision(self.master.player, self.master.enemy):
-            self.master.player.currPos = pygame.Vector2(
-                self.master.screen.get_width() / 2, self.master.screen.get_height()
-            )
-            self.master.player.velocity.y = 0

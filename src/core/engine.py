@@ -11,7 +11,7 @@ import pygame
 # 'draw' method could have a return type (error checking)
 
 from entities import Player
-from entities import Enemy
+from entities import Pipe
 
 
 # 'Engine' declaration and definition
@@ -66,7 +66,7 @@ class PhysicsEngine:
         return (dx * dx + dy * dy) < (circleRadius * circleRadius)
 
     # Handle collisions - should we store hitboxes in the class?
-    def checkCollision(self, player: Player, enemy: Enemy) -> bool:
+    def checkCollision(self, player: Player, enemy: Pipe) -> bool:
         # Player 'hitbox'
         playerCenter, playerRadius = player.getHitbox()
 

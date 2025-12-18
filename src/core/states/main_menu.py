@@ -19,9 +19,8 @@ class MainMenuState(absState):
         self.master.player.state = "IDLE"
         self.master.player.velocity = pygame.Vector2(0, 0)
 
-        self.master.enemy.currPos = pygame.Vector2(
-            self.master.screen.get_width() + 20, -20
-        )
+        # Remove pipes from list
+        self.master.pipes.clear()
 
     def update(self) -> None:
         self._resetGame()

@@ -1,38 +1,29 @@
 import pygame
 
 from entities import Player
-from entities import Enemy
+from entities import PipeFactory
 
 from core import PhysicsEngine
 from core import MainMenuState
 from core import GameInProgressState
-
-# ======================= #
-########## TO DO ##########
-# ======================= #
-
-# !!!!!! Add an array of pipes !!!!!!
-# Generalize magic numbers
-
-### Notes ###
-# None methods could have a return type (error checking)
 
 
 # 'GameMaster' class declaration and definition
 class GameMaster:
     def __init__(
         self,
-        screen=pygame.Surface,
+        screen: pygame.Surface,
         engine: PhysicsEngine = None,
         player: Player = None,
-        enemy: Enemy = None,
+        factory: PipeFactory = None,
         running: bool = False,
     ):
         self.screen = screen
         self.engine = engine
 
         self.player = player
-        self.enemy = enemy
+        self.factory = factory
+        self.pipes = []
 
         self.running = running
 

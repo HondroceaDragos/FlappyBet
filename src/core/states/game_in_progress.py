@@ -4,6 +4,12 @@ from ._abs_state import absState
 
 # 'GameInProgressState' class declaration and definition
 class GameInProgressState(absState):
+    def onEnter(self) -> None:
+        self.master.sound.playMusic("gameLoop")
+
+    def onExit(self):
+        pygame.mixer.music.fadeout(500)
+
     def handler(self, events: list[pygame.event.Event]) -> None:
         for event in events:
             if event.type == pygame.KEYDOWN:
@@ -11,6 +17,7 @@ class GameInProgressState(absState):
                     case pygame.K_SPACE:
                         self.master.player.jumpPressed = True
                         self.master.engine.jump(self.master.player)
+                        self.master.sound.playSfx("playerJump")
                     case pygame.K_ESCAPE:
                         self.master.switchGameState("mainMenu")
 
@@ -42,6 +49,7 @@ class GameInProgressState(absState):
 
             if self.master.engine.checkCollision(self.master.player, pipe):
                 self._resetState()
+                self.master.sound.playSfx("playerDeath")
                 return
         self.master.pipes = alivePipes
 
@@ -59,7 +67,6 @@ class GameInProgressState(absState):
         self.master.player.animatePlayer()
 
     def update(self) -> None:
-        # self.master.engine._clock.tick()
 
         self._updateEnv()
         self._updatePlayer()

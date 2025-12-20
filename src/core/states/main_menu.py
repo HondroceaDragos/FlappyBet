@@ -4,6 +4,12 @@ from ._abs_state import absState
 
 # 'MainMenuState' class declaration and definition
 class MainMenuState(absState):
+    def onEnter(self) -> None:
+        self.master.sound.playMusic("mainMenu")
+
+    def onExit(self):
+        pygame.mixer.music.fadeout(500)
+
     # @Override
     def handler(self, events: list[pygame.event.Event]) -> None:
         for event in events:

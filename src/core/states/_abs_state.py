@@ -23,3 +23,11 @@ class absState(ABC):
     @abstractmethod
     def draw(self) -> None:
         print("If this is shown in terminal, something bad happened!")
+
+    @abstractmethod
+    def onEnter(self) -> None:
+        pass
+
+    @abstractmethod
+    def onExit(self) -> None:
+        pass

@@ -14,6 +14,8 @@ from gameplay import GameMaster
 
 from ui import ScreenComputer
 
+from sound import SoundManager
+
 import sys
 
 # ======================= #
@@ -35,6 +37,7 @@ if len(sys.argv) < 2:
     sys.exit()
 
 pygame.init()
+pygame.mixer.init()
 
 # Start the game window
 screen, vScreen = ScreenComputer.getScreen()
@@ -43,8 +46,9 @@ vScreen = ScreenComputer.rescaleVirtualScreen(screen, vScreen)
 # Initialize the master
 player = Player(screen=vScreen, radius=35)
 engine = PhysicsEngine(screen=vScreen, dt=0)
+sound = SoundManager()
 factory = PipeFactory(screen=vScreen)
-gameMaster = GameMaster(vScreen, engine, player, factory, True)
+gameMaster = GameMaster(vScreen, engine, player, factory, sound, True)
 
 # Debugger state selection
 match sys.argv[1]:

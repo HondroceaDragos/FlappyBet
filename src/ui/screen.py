@@ -4,50 +4,32 @@ from enum import Enum
 
 # 'ScreenComputer' class declaration and definition
 class ScreenComputer:
-    # All aspect ratios - should be 16:9 on all displays
-    class AspectRatios(Enum):
-        HEIGHT_PTG = 3 / 4
-        WIDTH_BY_HEIGHT = 16 / 9
+    class Scales(Enum):
+        HEIGHT_SCALE = 0.8
 
     # Virtual screen parameters
-    _vScreenWidth = 1280
     _vScreenHeight = 720
-
-    # Virtual screen surface
-    _vScreen = pygame.Surface((_vScreenWidth, _vScreenHeight))
 
     # Compute both real and virtual screens
     @staticmethod
     def getScreen():
         displayHeight = pygame.display.Info().current_h
-        screenHeight = int(ScreenComputer.AspectRatios.HEIGHT_PTG.value * displayHeight)
-        screenWidth = int(
-            ScreenComputer.AspectRatios.WIDTH_BY_HEIGHT.value * screenHeight
-        )
+        displayWidth = pygame.display.Info().current_w
+
+        screenHeight = int(ScreenComputer.Scales.HEIGHT_SCALE.value * displayHeight)
+        screenWidth = int(screenHeight * (displayWidth / displayHeight))
 
         screen = pygame.display.set_mode((screenWidth, screenHeight))
 
-        return screen, ScreenComputer._vScreen
+        _vScreenWidth = int(
+            ScreenComputer._vScreenHeight * (screenWidth / screenHeight)
+        )
+
+        vScreen = pygame.Surface((_vScreenWidth, ScreenComputer._vScreenHeight))
+
+        return screen, vScreen
 
     # Resize the virtual screen - avoid stretching
     @staticmethod
-    def rescaleVirtualScreen(screen: pygame.Surface):
-        scale = min(
-            screen.get_width() / ScreenComputer._vScreenWidth,
-            screen.get_height() / ScreenComputer._vScreenHeight,
-        )
-
-        return pygame.transform.smoothscale(
-            ScreenComputer._vScreen,
-            (
-                int(scale * ScreenComputer._vScreenWidth),
-                int(scale * ScreenComputer._vScreenHeight),
-            ),
-        )
-
-    # Center the virtual screen - coords.
-    @staticmethod
-    def getOffset(screen: pygame.Surface):
-        return ((screen.get_width() - ScreenComputer._vScreenWidth) // 2), (
-            (screen.get_height() - ScreenComputer._vScreenHeight) // 2
-        )
+    def rescaleVirtualScreen(screen: pygame.Surface, vScreen: pygame.Surface):
+        return pygame.transform.smoothscale(vScreen, screen.get_size())

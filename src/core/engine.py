@@ -20,18 +20,21 @@ class PhysicsEngine:
     _dt: float = 0
     _clock = pygame.time.Clock()
 
-    def __init__(self, screen=pygame.Surface, dt: float = 0, frameRate: int = 0):
+    def __init__(self, screen=pygame.Surface, dt: float = 0):
         self.screen = screen
         self._dt = dt
-        self._frameRate = frameRate
 
     # Game is capped at 60 fps
     def updateDt(self) -> None:
-        self._dt = self._clock.tick(self._frameRate) / 1000
+        self._dt = self._clock.tick() / 1000
+
+    def resetClock(self) -> None:
+        self._clock.tick()
+        self._dt = 0
 
     # Private method for out of bounds resets
     def _clampPlayer(self, player: Player) -> None:
-        player.currPos.y = round(player.currPos.y)
+        # player.currPos.y = round(player.currPos.y)
 
         # Down
         if player.currPos.y > self.screen.get_height() - player._radius:

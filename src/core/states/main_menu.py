@@ -21,11 +21,13 @@ class MainMenuState(absState):
 
         # Remove pipes from list
         self.master.pipes.clear()
+        self.master.engine.resetClock()
 
     def update(self) -> None:
         self._resetGame()
 
     # To be changed with interactible buttons
+    # Change it to be screen dependent
     def draw(self) -> None:
         self.master.screen.fill("white")
 

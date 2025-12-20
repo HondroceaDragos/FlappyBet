@@ -38,11 +38,11 @@ pygame.init()
 
 # Start the game window
 screen, vScreen = ScreenComputer.getScreen()
-vScreen = ScreenComputer.rescaleVirtualScreen(screen)
+vScreen = ScreenComputer.rescaleVirtualScreen(screen, vScreen)
 
 # Initialize the master
 player = Player(screen=vScreen, radius=35)
-engine = PhysicsEngine(screen=vScreen, dt=0, frameRate=60)
+engine = PhysicsEngine(screen=vScreen, dt=0)
 factory = PipeFactory(screen=vScreen)
 gameMaster = GameMaster(vScreen, engine, player, factory, True)
 
@@ -55,8 +55,7 @@ match sys.argv[1]:
 
 # Heart of the game
 while gameMaster.running:
-    # Display 1280x720 on all displays
-    screen.blit(vScreen, ScreenComputer.getOffset(screen))
+    screen.blit(vScreen, (0, 0))
 
     # Handle events
     gameMaster.update()

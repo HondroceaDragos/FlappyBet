@@ -54,7 +54,7 @@ class PipeFactory:
         self.dtSpawn = 0.5
 
         # Maximum distance from top or bot
-        self.edge = 40
+        self.edge = int(self.screen.get_height() * 0.05)
 
         # Choose one of the patterns
         self.currPattern = random.choice(self.spawnPatterns)

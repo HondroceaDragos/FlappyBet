@@ -59,7 +59,7 @@ class GameInProgressState(absState):
         self.master.player.animatePlayer()
 
     def update(self) -> None:
-        self.master.engine._clock.tick()
+        # self.master.engine._clock.tick()
 
         self._updateEnv()
         self._updatePlayer()

@@ -17,6 +17,7 @@ from ui import ScreenComputer
 from sound import SoundManager
 
 import sys
+from debugger import Debugger
 
 # ======================= #
 ########## TO DO ##########
@@ -30,11 +31,12 @@ import sys
 # Migth want to store screen parameters to not call get_... all the time
 
 # Debugger usage prompt
-if len(sys.argv) < 2:
-    print("Usage:\n")
-    print("-m: Start from main menu")
-    print("-g: Start from gameplay section\n")
-    sys.exit()
+if len(sys.argv) == 2:
+    if sys.argv[1] == "-d":
+        Debugger.enable()
+    else:
+        print("To start the debugger, please use '-d' ")
+        sys.exit()
 
 pygame.init()
 pygame.mixer.init()
@@ -50,12 +52,8 @@ sound = SoundManager()
 factory = PipeFactory(screen=vScreen)
 gameMaster = GameMaster(vScreen, engine, player, factory, sound, True)
 
-# Debugger state selection
-match sys.argv[1]:
-    case "-m":
-        gameMaster.switchGameState("mainMenu")
-    case "-g":
-        gameMaster.switchGameState("gameInProgress")
+if Debugger.STATE:
+    gameMaster.switchGameState(Debugger.STATE)
 
 # Heart of the game
 while gameMaster.running:

@@ -40,14 +40,16 @@ class GameMaster:
         }
 
         # Start from main menu
-        self._currState = self.states["mainMenu"]
+        self._currState = None
+        self.switchGameState("mainMenu")
 
     # Action may cause game switches
     def switchGameState(self, state: str) -> None:
         if self._currState == state:
             return
-        
-        self._currState.onExit()
+
+        if self._currState:
+            self._currState.onExit()
         self._currState = self.states[state]
         self._currState.onEnter()
 
@@ -67,13 +69,21 @@ class GameMaster:
                 match event.key:
                     case pygame.K_e:
                         self.sound.changeSfxVolume(0.2)
-                        SettingsManager.setUserPreferences({"sfx": self.sound.sfxVolume})
+                        SettingsManager.setUserPreferences(
+                            {"sfx": self.sound.sfxVolume}
+                        )
                     case pygame.K_q:
                         self.sound.changeSfxVolume(-0.2)
-                        SettingsManager.setUserPreferences({"sfx": self.sound.sfxVolume})
+                        SettingsManager.setUserPreferences(
+                            {"sfx": self.sound.sfxVolume}
+                        )
                     case pygame.K_d:
                         self.sound.changeMusicVolume(0.2)
-                        SettingsManager.setUserPreferences({"music": self.sound.musicVolume})
+                        SettingsManager.setUserPreferences(
+                            {"music": self.sound.musicVolume}
+                        )
                     case pygame.K_a:
                         self.sound.changeMusicVolume(-0.2)
-                        SettingsManager.setUserPreferences({"music": self.sound.musicVolume})
+                        SettingsManager.setUserPreferences(
+                            {"music": self.sound.musicVolume}
+                        )

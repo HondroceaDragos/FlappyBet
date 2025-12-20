@@ -1,6 +1,8 @@
 import pygame
 from enum import Enum
 
+from debugger import Debugger
+
 # ============================= #
 ############# TO DO #############
 # ============================= #
@@ -64,17 +66,18 @@ class Pipe:
     # Display method
     def draw(self):
         # Draw hitbox
-        pygame.draw.rect(
-            self.screen,
-            "green",
-            (
-                self.currPos.x,
-                self.currPos.y,
-                Pipe.Proportions.WIDTH.value,
-                Pipe.Proportions.HEIGHT.value,
-            ),
-            2,
-        )
+        if Debugger.HITBOXES:
+            pygame.draw.rect(
+                self.screen,
+                "green",
+                (
+                    self.currPos.x,
+                    self.currPos.y,
+                    Pipe.Proportions.WIDTH.value,
+                    Pipe.Proportions.HEIGHT.value,
+                ),
+                2,
+            )
 
         # Draw sprite
         rect = self.sprite.get_rect(topleft=self.currPos)

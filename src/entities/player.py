@@ -1,5 +1,7 @@
 import pygame
 
+from debugger import Debugger
+
 # ======================= #
 ########## TO DO ##########
 # ======================= #
@@ -131,4 +133,5 @@ class Player:
         self.screen.blit(self._currentSprite, rect)
 
         # Player hitbox
-        pygame.draw.circle(self.screen, "red", self.currPos, self._radius, 2)
+        if Debugger.HITBOXES:
+            pygame.draw.circle(self.screen, "red", self.currPos, self._radius, 2)

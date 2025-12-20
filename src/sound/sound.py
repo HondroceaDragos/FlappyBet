@@ -1,6 +1,7 @@
 import pygame
 from config import SettingsManager
 
+
 # 'SoundManager' class declaration and definition
 class SoundManager:
     def __init__(self):
@@ -13,7 +14,7 @@ class SoundManager:
         # Load all sfx sounds
         self.sfx = {
             "playerJump": pygame.mixer.Sound("../assets/audio/sfx/playerJump.wav"),
-            "playerDeath": pygame.mixer.Sound("../assets/audio/sfx/playerDeath.wav")
+            "playerDeath": pygame.mixer.Sound("../assets/audio/sfx/playerDeath.wav"),
         }
 
         # Change their volume
@@ -25,7 +26,7 @@ class SoundManager:
         # Where to find songs
         self.music = {
             "gameLoop": "../assets/audio/songs/gameLoop.wav",
-            "mainMenu": "../assets/audio/songs/mainMenu.wav"
+            "mainMenu": "../assets/audio/songs/mainMenu.wav",
         }
 
         # No song is initially loaded
@@ -50,7 +51,7 @@ class SoundManager:
     def playMusic(self, song: str) -> None:
         if self.currSong == song:
             return
-        
+
         if song in self.music:
             self.currSong = song
             pygame.mixer.music.stop()

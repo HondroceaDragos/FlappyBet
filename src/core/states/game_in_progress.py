@@ -74,11 +74,16 @@ class GameInProgressState(absState):
                 alive_obs.append(obs)
 
             if self.master.engine.checkCollision(self.master.player, obs):
-                self.master.sound.playSfx("playerDeath")
-                # Store score later; for now just 0
-                self.master.lastScore = getattr(self.master, "score", 0)
-                self.master.switchGameState("gameOver")
-                return
+                # Walkable tunnel walls are non-lethal solids
+                if hasattr(obs, "lethal") and obs.lethal is False:
+                    self.master.engine.resolveSolidCircleRect(self.master.player, obs.getHitbox())
+                else:
+                    self.master.sound.playSfx("playerDeath")
+                    # Store score later; for now just 0
+                    self.master.lastScore = getattr(self.master, "score", 0)
+                    self.master.switchGameState("gameOver")
+                    return
+
         self.master.pipes = alive_obs
 
         playerCenter, playerRadius = self.master.player.getHitbox()

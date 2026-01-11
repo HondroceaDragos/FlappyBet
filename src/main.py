@@ -40,8 +40,6 @@ if Debugger.STATE:
     gameMaster.switchGameState(Debugger.STATE)
 
 while gameMaster.running:
-    # NOTE: you may want to blit AFTER update for no 1-frame lag,
-    # but leaving your structure unchanged is fine.
     screen.blit(vScreen, (0, 0))
     gameMaster.update()
     pygame.display.flip()

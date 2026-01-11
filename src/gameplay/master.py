@@ -7,6 +7,8 @@ from core import PhysicsEngine
 from core import MainMenuState
 from core import GameInProgressState
 from core import PauseMenuState
+from core import GameOverState
+from core import SlotsState
 
 from sound import SoundManager
 
@@ -39,6 +41,9 @@ class GameMaster:
             "mainMenu": MainMenuState(self),
             "gameInProgress": GameInProgressState(self),
             "pauseMenu": PauseMenuState(self),
+            "slots": SlotsState(self),
+            "gameOver": GameOverState(self),
+            
         }
 
         # Start from main menu
@@ -54,6 +59,27 @@ class GameMaster:
             self._currState.onExit()
         self._currState = self.states[state]
         self._currState.onEnter()
+
+    def resetRun(self) -> None:
+    # Reset player
+        self.player.currPos = pygame.Vector2(
+            self.screen.get_width() / 2, self.screen.get_height() / 2
+        )
+        self.player.jumpPressed = False
+        self.player.state = "IDLE"
+        self.player.velocity = pygame.Vector2(0, 0)
+
+        # Reset pipes + spawning timers
+        self.pipes.clear()
+        self.factory.dtSpawn = 0.0  # optional; makes spawn timing consistent
+
+        # Reset time so dt doesn't spike
+        self.engine.resetClock()
+
+        # Unpause gameplay
+        self.isPaused = False
+
+
 
     # Interact with the env.
     def update(self) -> None:

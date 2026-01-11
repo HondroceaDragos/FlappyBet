@@ -48,8 +48,10 @@ class GameInProgressState(absState):
                 alivePipes.append(pipe)
 
             if self.master.engine.checkCollision(self.master.player, pipe):
-                self._resetState()
                 self.master.sound.playSfx("playerDeath")
+                # Store score later; for now just 0
+                self.master.lastScore = getattr(self.master, "score", 0)
+                self.master.switchGameState("gameOver")
                 return
         self.master.pipes = alivePipes
 

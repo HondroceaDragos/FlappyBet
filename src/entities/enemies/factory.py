@@ -10,16 +10,10 @@ def loadSprites():
     variantOne = pygame.image.load(
         "../assets/sprites/pipeSprites/pipeVariant1.png"
     ).convert_alpha()
-    variantOne = pygame.transform.smoothscale(
-        variantOne, (Pipe.Proportions.WIDTH.value, Pipe.Proportions.HEIGHT.value)
-    )
 
     variantTwo = pygame.image.load(
         "../assets/sprites/pipeSprites/pipeVariant2.png"
     ).convert_alpha()
-    variantTwo = pygame.transform.smoothscale(
-        variantTwo, (Pipe.Proportions.WIDTH.value, Pipe.Proportions.HEIGHT.value)
-    )
 
     sprites.append(variantOne)
     sprites.append(variantTwo)
@@ -62,6 +56,16 @@ class PipeFactory:
 
         self.sprites = loadSprites()
 
+    # Height function
+    def _computePipeHeight(self, passed_count: int) -> int:
+        base = Pipe.Proportions.BASE_HEIGHT.value
+
+        growth_per = 10
+        max_extra = int(self.screen.get_height() * 0.55)
+
+        extra = min(max_extra, passed_count * growth_per)
+        return base + extra
+
     # Add elapsed time
     def update(self, dt: float) -> None:
         self.dtSpawn += dt
@@ -71,7 +75,7 @@ class PipeFactory:
         return self.dtSpawn >= self.dftSpawnRate
 
     # Build pipe
-    def spawn(self) -> Pipe:
+    def spawn(self, passed_count: int = 0) -> Pipe:
         # Choose orientation based on patterns
         orientation = self.currPattern[self.patternIdx]
         self.patternIdx += 1
@@ -83,7 +87,7 @@ class PipeFactory:
 
         # Always spawn from the right
         newX = self.screen.get_width() + 20
-        newY = 0
+        pipe_height = self._computePipeHeight(passed_count)
 
         # Place pipe based on orientation
         match (orientation):
@@ -91,7 +95,7 @@ class PipeFactory:
                 newY = random.randint(-self.edge, 0)
             case "bottom":
                 newY = random.randint(
-                    self.screen.get_height() - Pipe.Proportions.HEIGHT.value,
+                    self.screen.get_height() - pipe_height,
                     self.screen.get_height() - self.edge,
                 )
 
@@ -105,4 +109,5 @@ class PipeFactory:
             velocity=self.dftVelocity,
             orientation=orientation,
             sprite=chooseSprite(self.sprites),
+            height=pipe_height
         )

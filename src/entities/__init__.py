@@ -1,5 +1,8 @@
-from .enemies.factory import PipeFactory
-from .enemies._pipe import Pipe
 from .player import Player
 
-__all__ = ["PipeFactory", "Player", "Pipe"]
+from .enemies._pipe import Pipe
+from .enemies.factory import PipeFactory
+
+from .coin import Coin
+from .obstacle_rect import RectObstacle
+from .hazard_patch import HazardPatch

@@ -2,7 +2,6 @@ import pygame
 from ._abs_state import absState
 
 
-# 'GameInProgressState' class declaration and definition
 class GameInProgressState(absState):
     def onEnter(self) -> None:
         self.master.sound.playMusic("gameLoop")
@@ -24,46 +23,99 @@ class GameInProgressState(absState):
             if event.type == pygame.KEYUP and event.key == pygame.K_SPACE:
                 self.master.player.jumpPressed = False
 
+    def _circle_circle_col(self, c1: pygame.Vector2, r1: float, c2: pygame.Vector2, r2: float) -> bool:
+        dx = c1.x - c2.x
+        dy = c1.y - c2.y
+        return (dx * dx + dy * dy) < (r1 + r2) * (r1 + r2)
+
     def draw(self) -> None:
         self.master.screen.fill("white")
+
         self.master.player.draw()
-        for pipe in self.master.pipes:
-            pipe.draw()
+
+        for obs in self.master.pipes:
+            obs.draw()
+
+        for coin in self.master.coins:
+            coin.draw()
+
+        font = pygame.font.Font(None, 42)
+        s = font.render(f"Score: {self.master.score}", True, "black")
+        sec = self.master.section_manager.getSectionName()
+        tier = self.master.section_manager.getTier()
+        t = font.render(f"Section: {sec} (tier {tier})", True, "black")
+        self.master.screen.blit(s, (20, 18))
+        self.master.screen.blit(t, (20, 55))
 
     def _updateEnv(self) -> None:
         self.master.engine.updateDt()
+        dt = self.master.engine._dt
+
         self.master.engine.applyGravity(self.master.player)
 
-        # Create new pipes as time passes
-        self.master.factory.update(self.master.engine._dt)
-        if self.master.factory.shouldSpawn():
-            self.master.pipes.append(self.master.factory.spawn())
+        self.master.progression.update(dt)
 
-        # Update each new pipe
-        alivePipes = []
-        for pipe in self.master.pipes:
-            pipe.update(self.master.engine._dt)
+        self.master.section_manager.update(dt)
 
-            if pipe.shouldKill() is False:
-                alivePipes.append(pipe)
+        new_obs, new_coins = self.master.section_manager.maybe_spawn(
+            hazard_intensity=self.master.progression.hazard_intensity
+        )
 
-            if self.master.engine.checkCollision(self.master.player, pipe):
+        if new_obs:
+            self.master.pipes.extend(new_obs)
+        if new_coins:
+            self.master.coins.extend(new_coins)
+
+        alive_obs = []
+        for obs in self.master.pipes:
+            obs.update(dt)
+
+            if not obs.shouldKill():
+                alive_obs.append(obs)
+
+            if self.master.engine.checkCollision(self.master.player, obs):
                 self.master.sound.playSfx("playerDeath")
                 # Store score later; for now just 0
                 self.master.lastScore = getattr(self.master, "score", 0)
                 self.master.switchGameState("gameOver")
                 return
-        self.master.pipes = alivePipes
+        self.master.pipes = alive_obs
 
-    # Start new game upon death
+        playerCenter, playerRadius = self.master.player.getHitbox()
+        alive_coins = []
+        for coin in self.master.coins:
+            coin.update(dt)
+            if coin.shouldKill():
+                continue
+
+            coinCenter, coinRadius = coin.getHitbox()
+            dx = playerCenter.x - coinCenter.x
+            dy = playerCenter.y - coinCenter.y
+            if (dx * dx + dy * dy) < (playerRadius + coinRadius) ** 2:
+                coin.collected = True
+                self.master.score += coin.value
+                self.master.progression.addCoins(coin.value)
+                continue
+
+            alive_coins.append(coin)
+        self.master.coins = alive_coins
+
+
     def _resetState(self) -> None:
         self.master.player.currPos = pygame.Vector2(
             self.master.screen.get_width() / 2, self.master.screen.get_height() / 2
         )
         self.master.player.velocity.y = 0
-        self.master.pipes.clear()
 
-    # Call animation engine
+        self.master.pipes.clear()
+        self.master.coins.clear()
+
+        self.master.score = 0
+        self.master.section_manager.reset()
+        self.master.progression.reset()
+
+        self.master.engine.resetClock()
+
     def _updatePlayer(self) -> None:
         self.master.player.decideState()
         self.master.player.animatePlayer()

@@ -66,7 +66,7 @@ class GameMaster:
         self._currState.onEnter()
 
     def resetRun(self) -> None:
-    # Reset player
+        # Reset player
         self.player.currPos = pygame.Vector2(
             self.screen.get_width() / 2, self.screen.get_height() / 2
         )
@@ -74,15 +74,22 @@ class GameMaster:
         self.player.state = "IDLE"
         self.player.velocity = pygame.Vector2(0, 0)
 
-        # Reset pipes + spawning timers
+        # Reset score + collectibles
+        self.score = 0
+        self.coins.clear()
+
+        # Reset obstacles
         self.pipes.clear()
+
+        # Reset run systems (THIS is the "t = 0" equivalent now)
+        self.section_manager.reset()
+        self.progression.reset()
 
         # Reset time so dt doesn't spike
         self.engine.resetClock()
 
         # Unpause gameplay
         self.isPaused = False
-
 
 
     # Interact with the env.

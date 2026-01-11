@@ -98,8 +98,3 @@ class MainMenuState(absState):
         self.master.screen.blit(hint, ((w - hint.get_width()) // 2, int(h * 0.80)))
         mainMenuFont = pygame.font.Font(None, 96)
 
-        mainMenuText = mainMenuFont.render("FlappyBet Mine Escape", True, "black")
-        actionText = mainMenuFont.render("Press [SPACE] to start!", True, "black")
-
-        self.master.screen.blit(mainMenuText, (30, 60))
-        self.master.screen.blit(actionText, (30, 170))

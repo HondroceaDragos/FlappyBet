@@ -4,7 +4,10 @@ from debugger import Debugger
 
 class RectObstacle:
     """
-    Simple moving rectangle obstacle (for tunnel walls, beams, etc.)
+    Moving rectangle obstacle.
+
+    lethal=True  -> touching kills (spikes, lava, beams)
+    lethal=False -> solid surface (tunnel walls you can rest against)
     """
     def __init__(
         self,
@@ -13,12 +16,15 @@ class RectObstacle:
         velocity: float = 500.0,
         color: str = "gray25",
         sprite: pygame.Surface | None = None,
+        lethal: bool = True,
     ):
         self.screen = screen
         self.rect = rect
-        self.velocity = velocity
+        self.velocity = float(velocity)
         self.color = color
         self.sprite = sprite
+        self.lethal = bool(lethal)
+
         if self.sprite is not None:
             self.sprite = pygame.transform.smoothscale(
                 self.sprite, (self.rect.width, self.rect.height)
@@ -40,4 +46,6 @@ class RectObstacle:
             pygame.draw.rect(self.screen, self.color, self.rect)
 
         if Debugger.HITBOXES:
-            pygame.draw.rect(self.screen, "green", self.rect, 2)
+            # green = lethal, blue = walkable solid
+            outline = "green" if self.lethal else "dodgerblue"
+            pygame.draw.rect(self.screen, outline, self.rect, 2)

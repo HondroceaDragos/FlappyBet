@@ -68,6 +68,59 @@ class PhysicsEngine:
 
         return (dx * dx + dy * dy) < (circleRadius * circleRadius)
 
+    def resolveSolidCircleRect(self, player: Player, rect: pygame.Rect) -> None:
+        """
+        Resolve collision between player's circle and a solid rectangle.
+        Used for walkable tunnel surfaces (non-lethal walls).
+        We push the player out along the shallow axis.
+        """
+        center, radius = player.getHitbox()
+
+        # Find closest point on rect to circle center
+        closest_x = max(rect.left, min(center.x, rect.right))
+        closest_y = max(rect.top, min(center.y, rect.bottom))
+
+        dx = center.x - closest_x
+        dy = center.y - closest_y
+        dist2 = dx * dx + dy * dy
+
+        if dist2 >= radius * radius:
+            return  # no overlap
+
+        # If exactly inside edge (dx=dy=0), choose a direction based on proximity
+        if dx == 0 and dy == 0:
+            # push vertically by default (tunnel surfaces are vertical blocks)
+            if center.y < rect.centery:
+                dy = -1
+            else:
+                dy = 1
+
+        # Determine whether to resolve vertically or horizontally
+        # Prefer vertical resolution (feels like "standing" on surfaces)
+        # but still handle side impacts.
+        overlap_x = radius - abs(dx) if dx != 0 else radius
+        overlap_y = radius - abs(dy) if dy != 0 else radius
+
+        if overlap_y <= overlap_x:
+            # Resolve vertically
+            if center.y < rect.centery:
+                # player above rect -> push up
+                player.currPos.y = rect.top - radius
+                if player.velocity.y > 0:
+                    player.velocity.y = 0
+            else:
+                # player below rect -> push down
+                player.currPos.y = rect.bottom + radius
+                if player.velocity.y < 0:
+                    player.velocity.y = 0
+        else:
+            # Resolve horizontally
+            if center.x < rect.centerx:
+                player.currPos.x = rect.left - radius
+            else:
+                player.currPos.x = rect.right + radius
+            # (we don't track player x-velocity in your game; keep as positional correction)
+
     # Handle collisions - should we store hitboxes in the class?
     def checkCollision(self, player: Player, enemy: Pipe) -> bool:
         # Player 'hitbox'

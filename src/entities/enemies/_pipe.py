@@ -16,7 +16,7 @@ class Pipe:
     # Proportions constants
     class Proportions(Enum):
         WIDTH = 110
-        HEIGHT = 125
+        BASE_HEIGHT = 125
 
     # Where pipes should spawn
     class RelativeOrientation(Enum):
@@ -30,28 +30,30 @@ class Pipe:
         velocity: float,
         orientation,
         sprite,
+        height=None
     ):
         self.screen = screen
-
         self.currPos = currPos
         self.velocity = velocity
-
-        # Factory decides orientation
         self.orientation = orientation
 
-        self.sprite = sprite
+        self.width = Pipe.Proportions.WIDTH.value
+        self.height = height if height is not None else Pipe.Proportions.BASE_HEIGHT.value
 
-        # Rotate sprite to match orientation
+        self.sprite = pygame.transform.smoothscale(sprite, (self.width, self.height))
+
         if self.orientation == "top":
             self.sprite = pygame.transform.flip(self.sprite, False, True)
+
+        self.passed = False
 
     @property
     def _hitbox(self):
         return pygame.Rect(
             self.currPos.x,
             self.currPos.y,
-            Pipe.Proportions.WIDTH.value,
-            Pipe.Proportions.HEIGHT.value,
+            self.width,
+            self.height
         )
 
     def getHitbox(self) -> pygame.Rect:
@@ -61,7 +63,7 @@ class Pipe:
         self.currPos.x -= self.velocity * dt
 
     def shouldKill(self) -> bool:
-        return self.currPos.x + Pipe.Proportions.WIDTH.value <= 0
+        return self.currPos.x + self.width <= 0
 
     # Display method
     def draw(self):

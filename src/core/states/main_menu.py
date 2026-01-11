@@ -29,6 +29,9 @@ class MainMenuState(absState):
         self.master.pipes.clear()
         self.master.engine.resetClock()
 
+        self.master.passed_count = 0
+        self.master.score = 0
+
     def update(self) -> None:
         self._resetGame()
 

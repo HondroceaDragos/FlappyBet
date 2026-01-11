@@ -36,6 +36,9 @@ class GameMaster:
 
         self.running = running
 
+        self.passed_count = 0
+        self.score = 0
+
         # Load all possible states into the master
         self.states = {
             "mainMenu": MainMenuState(self),

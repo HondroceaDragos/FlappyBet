@@ -37,12 +37,17 @@ class GameInProgressState(absState):
         # Create new pipes as time passes
         self.master.factory.update(self.master.engine._dt)
         if self.master.factory.shouldSpawn():
-            self.master.pipes.append(self.master.factory.spawn())
+            self.master.pipes.append(self.master.factory.spawn(self.master.passed_count))
 
         # Update each new pipe
         alivePipes = []
         for pipe in self.master.pipes:
             pipe.update(self.master.engine._dt)
+
+            if (not pipe.passed) and (pipe.currPos.x + pipe.width < self.master.player.currPos.x):
+                pipe.passed = True
+                self.master.passed_count += 1
+                self.master.score += 1
 
             if pipe.shouldKill() is False:
                 alivePipes.append(pipe)
@@ -62,6 +67,9 @@ class GameInProgressState(absState):
         )
         self.master.player.velocity.y = 0
         self.master.pipes.clear()
+
+        self.master.passed_count = 0
+        self.master.score = 0
 
     # Call animation engine
     def _updatePlayer(self) -> None:

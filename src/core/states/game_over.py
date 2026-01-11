@@ -37,6 +37,9 @@ class GameOverState(absState):
                 mx, my = event.pos
 
                 if self._slots_rect.collidepoint(mx, my):
+                    self.master.bank = getattr(self.master, "lastScore", 0)
+                    # keep bet sane
+                    self.master.bet = min(getattr(self.master, "bet", 10), self.master.bank)
                     self.master.switchGameState("slots")
                     return
 
@@ -79,12 +82,20 @@ class GameOverState(absState):
         self._retry_rect = pygame.Rect(x, y0 + (btn_h + gap), btn_w, btn_h)
         self._menu_rect  = pygame.Rect(x, y0 + 2 * (btn_h + gap), btn_w, btn_h)
 
+        mx, my = pygame.mouse.get_pos()
+
         def draw_btn(rect: pygame.Rect, label: str):
-            pygame.draw.rect(self.master.screen, (70, 70, 80), rect, border_radius=14)
+            hovered = rect.collidepoint(mx, my)
+            fill = (60, 140, 255) if hovered else (70, 70, 80)
+
+            pygame.draw.rect(self.master.screen, fill, rect, border_radius=14)
             pygame.draw.rect(self.master.screen, (220, 220, 220), rect, 3, border_radius=14)
             t = text_font.render(label, True, (240, 240, 240))
-            self.master.screen.blit(t, (rect.x + (rect.w - t.get_width()) // 2,
-                                        rect.y + (rect.h - t.get_height()) // 2))
+            self.master.screen.blit(
+                t,
+                (rect.x + (rect.w - t.get_width()) // 2,
+                 rect.y + (rect.h - t.get_height()) // 2),
+            )
 
         draw_btn(self._slots_rect, "Slots")
         draw_btn(self._retry_rect, "Retry (R)")

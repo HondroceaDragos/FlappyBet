@@ -1,3 +1,3 @@
 from .settings import SettingsManager
-
-__all__ = [SettingsManager]
+from .high_score import HighScoreManager
+__all__ = ["SettingsManager", "HighScoreManager"]

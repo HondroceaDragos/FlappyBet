@@ -11,7 +11,6 @@ class SlotsState(absState):
 
     def onEnter(self) -> None:
         # Ensure you have a bank to work with (score from game over)
-        # Recommended: GameOverState sets master.bank = lastScore
         if not hasattr(self.master, "bank"):
             self.master.bank = getattr(self.master, "lastScore", 0)
 

@@ -11,7 +11,8 @@ from core import SlotsState
 from core import HelpState
 
 from sound import SoundManager
-from config import SettingsManager
+from config.settings import SettingsManager
+from config.high_score import HighScoreManager
 
 from gameplay.section_manager import SectionManager
 from gameplay.progression import Progression
@@ -25,12 +26,14 @@ class GameMaster:
         player: Player = None,
         sound: SoundManager = None,
         running: bool = False,
+        highestScore = 0,
     ):
         self.screen = screen
         self.engine = engine
 
         self.player = player
         self.sound = sound
+        self.highestScore = HighScoreManager.load()
 
         # Obstacles & collectibles
         self.pipes = []   # now: obstacles list (Pipe + RectObstacle)

@@ -66,6 +66,14 @@ class MainMenuState(absState):
         title = title_font.render("FlappyBet", True, (20, 20, 20))
         self.master.screen.blit(title, ((w - title.get_width()) // 2, int(h * 0.22)))
 
+        high = small_font.render(
+            f"Highest Score: {self.master.highestScore}",
+            True,
+            (60, 60, 60)
+        )
+        self.master.screen.blit(high, ((w - high.get_width()) // 2, int(h * 0.40)))
+
+
         # Buttons
         btn_w, btn_h = 320, 78
         x = (w - btn_w) // 2

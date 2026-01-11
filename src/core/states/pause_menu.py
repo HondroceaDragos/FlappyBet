@@ -60,7 +60,6 @@ class PauseMenuState(absState):
                     self.master.switchGameState("mainMenu")
                     return
 
-            # Optional: allow dragging on bars
             if event.type == pygame.MOUSEMOTION and event.buttons[0]:
                 mx, my = event.pos
                 if self._music_bar_rect.collidepoint(mx, my):

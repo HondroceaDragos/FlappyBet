@@ -1,6 +1,8 @@
 import pygame
 from ._abs_state import absState
 
+from config.high_score import HighScoreManager
+
 
 class GameOverState(absState):
     def onEnter(self) -> None:
@@ -10,11 +12,7 @@ class GameOverState(absState):
         self.master.sound.playMusic("mainMenu")
 
         # Placeholder score value (until you implement scoring)
-        # If later you store it in master.score, use that.
         self._final_score = getattr(self.master, "lastScore", 0)
-
-        # Optional: play music or death sting (you already play sfx on death)
-        # self.master.sound.playMusic("mainMenu")  # or another track
 
     def onExit(self) -> None:
         pass
@@ -25,11 +23,17 @@ class GameOverState(absState):
                 if event.key == pygame.K_r:
                     # Retry
                     self.master.resetRun()
+                    self.master.lastScore = getattr(self.master, "bank", self._final_score)
+                    self.master.highestScore = max(self.master.highestScore, self.master.lastScore)
+                    HighScoreManager.save(self.master.highestScore)
                     self.master.switchGameState("gameInProgress")
                     return
                 if event.key == pygame.K_ESCAPE:
                     self.master.isPaused = False
                     self.master.engine.resetClock()
+                    self.master.lastScore = getattr(self.master, "bank", self._final_score)
+                    self.master.highestScore = max(self.master.highestScore, self.master.lastScore)
+                    HighScoreManager.save(self.master.highestScore)
                     self.master.switchGameState("mainMenu")
                     return
 
@@ -45,12 +49,18 @@ class GameOverState(absState):
 
                 if self._retry_rect.collidepoint(mx, my):
                     self.master.isPaused = False
+                    self.master.lastScore = getattr(self.master, "bank", self._final_score)
+                    self.master.highestScore = max(self.master.highestScore, self.master.lastScore)
+                    HighScoreManager.save(self.master.highestScore)
                     self.master.resetRun()
                     self.master.switchGameState("gameInProgress")
                     return
 
                 if self._menu_rect.collidepoint(mx, my):
                     self.master.isPaused = False
+                    self.master.lastScore = getattr(self.master, "bank", self._final_score)
+                    self.master.highestScore = max(self.master.highestScore, self.master.lastScore)
+                    HighScoreManager.save(self.master.highestScore)
                     self.master.engine.resetClock()
                     self.master.switchGameState("mainMenu")
                     return

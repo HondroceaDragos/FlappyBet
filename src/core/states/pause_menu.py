@@ -11,6 +11,7 @@ class PauseMenuState(absState):
 
     def onExit(self) -> None:
         self.master.isPaused = False
+        self.master.sound.playMusic("gameLoop")
         # Prevent dt including time spent paused
         self.master.engine.resetClock()
 

@@ -7,6 +7,7 @@ class GameOverState(absState):
         # Stop gameplay
         self.master.isPaused = True
         self.master.engine.resetClock()
+        self.master.sound.playMusic("mainMenu")
 
         # Placeholder score value (until you implement scoring)
         # If later you store it in master.score, use that.

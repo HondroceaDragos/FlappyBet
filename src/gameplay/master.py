@@ -8,6 +8,7 @@ from core import GameInProgressState
 from core import PauseMenuState
 from core import GameOverState
 from core import SlotsState
+from core import HelpState
 
 from sound import SoundManager
 from config import SettingsManager
@@ -50,6 +51,7 @@ class GameMaster:
             "pauseMenu": PauseMenuState(self),
             "slots": SlotsState(self),
             "gameOver": GameOverState(self),
+            "help": HelpState(self),
             
         }
 

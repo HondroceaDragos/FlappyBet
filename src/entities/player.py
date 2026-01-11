@@ -72,6 +72,7 @@ class Player:
         # Default state
         self.jumpPressed = False
         self.state = "IDLE"
+        self.on_surface = False
 
         # Spawn position
         if currPos is None:
@@ -96,15 +97,12 @@ class Player:
     # Core of animation engine
     def decideState(self) -> None:
         # Player is on ground
-        if self.currPos.y + self._radius >= self.screen.get_height():
+        if self.on_surface or (self.currPos.y + self._radius >= self.screen.get_height()):
             self.state = "IDLE"
         else:
             # Player is flying
             if self.velocity.y < 0:
                 self.state = "FLYING"
-            # VERY IMPORTANT FOR GAME FEEL - if 'jump' is pressed
-            # the flying sprite is shown - makes it feel like the bird
-            # is trying to fly harder
             elif (
                 self.jumpPressed
                 and self.currPos.y + self._radius < self.screen.get_height()

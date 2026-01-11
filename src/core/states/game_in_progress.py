@@ -23,7 +23,9 @@ class GameInProgressState(absState):
             if event.type == pygame.KEYUP and event.key == pygame.K_SPACE:
                 self.master.player.jumpPressed = False
 
-    def _circle_circle_col(self, c1: pygame.Vector2, r1: float, c2: pygame.Vector2, r2: float) -> bool:
+    def _circle_circle_col(
+        self, c1: pygame.Vector2, r1: float, c2: pygame.Vector2, r2: float
+    ) -> bool:
         dx = c1.x - c2.x
         dy = c1.y - c2.y
         return (dx * dx + dy * dy) < (r1 + r2) * (r1 + r2)
@@ -51,60 +53,86 @@ class GameInProgressState(absState):
         self.master.engine.updateDt()
         dt = self.master.engine._dt
 
+        # Keep player centered in X so "rising floor pushes you backwards" can't happen
+        fixed_x = self.master.screen.get_width() / 2
+
+        # Apply physics first
         self.master.engine.applyGravity(self.master.player)
 
-        self.master.progression.update(dt)
+        # Clear contact flag each frame; tunnel solids will set it if you stand on them
+        self.master.player.on_surface = False
 
+        # Lock X before spawning/updating (prevents weird solver side pushes from accumulating)
+        self.master.player.currPos.x = fixed_x
+
+        # Global progression + section progression
+        self.master.progression.update(dt)
         self.master.section_manager.update(dt)
 
+        # Spawn new obstacles / coins
         new_obs, new_coins = self.master.section_manager.maybe_spawn(
             hazard_intensity=self.master.progression.hazard_intensity
         )
-
         if new_obs:
             self.master.pipes.extend(new_obs)
         if new_coins:
             self.master.coins.extend(new_coins)
 
+        # Update obstacles and handle collisions
         alive_obs = []
+        player_center, player_radius = self.master.player.getHitbox()
+
         for obs in self.master.pipes:
             obs.update(dt)
 
             if not obs.shouldKill():
                 alive_obs.append(obs)
 
+            # Collision?
             if self.master.engine.checkCollision(self.master.player, obs):
                 # Walkable tunnel walls are non-lethal solids
                 if hasattr(obs, "lethal") and obs.lethal is False:
-                    self.master.engine.resolveSolidCircleRect(self.master.player, obs.getHitbox())
+                    hb = obs.getHitbox()
+
+                    # Resolve penetration
+                    self.master.engine.resolveSolidCircleRect(self.master.player, hb)
+
+                    # If we ended up standing on TOP of a solid, mark as grounded-on-surface
+                    # This drives IDLE sprite selection in Player.decideState().
+                    if abs((self.master.player.currPos.y + player_radius) - hb.top) <= 2:
+                        self.master.player.on_surface = True
+
+                    # Re-lock X after resolution so the tunnel can't shove you backwards
+                    self.master.player.currPos.x = fixed_x
                 else:
                     self.master.sound.playSfx("playerDeath")
-                    # Store score later; for now just 0
                     self.master.lastScore = getattr(self.master, "score", 0)
                     self.master.switchGameState("gameOver")
                     return
 
         self.master.pipes = alive_obs
 
-        playerCenter, playerRadius = self.master.player.getHitbox()
+        # Coins: update and collect
+        player_center, player_radius = self.master.player.getHitbox()
         alive_coins = []
         for coin in self.master.coins:
             coin.update(dt)
             if coin.shouldKill():
                 continue
 
-            coinCenter, coinRadius = coin.getHitbox()
-            dx = playerCenter.x - coinCenter.x
-            dy = playerCenter.y - coinCenter.y
-            if (dx * dx + dy * dy) < (playerRadius + coinRadius) ** 2:
+            coin_center, coin_radius = coin.getHitbox()
+            if self._circle_circle_col(player_center, player_radius, coin_center, coin_radius):
                 coin.collected = True
                 self.master.score += coin.value
                 self.master.progression.addCoins(coin.value)
                 continue
 
             alive_coins.append(coin)
+
         self.master.coins = alive_coins
 
+        # Final X lock (belt-and-suspenders)
+        self.master.player.currPos.x = fixed_x
 
     def _resetState(self) -> None:
         self.master.player.currPos = pygame.Vector2(

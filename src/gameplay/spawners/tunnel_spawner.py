@@ -6,8 +6,8 @@ from entities import RectObstacle
 class TunnelSpawner:
     """
     Walkable continuous tunnel:
-    - spawns frequent thin wall slices (top + bottom) => continuous corridor
-    - walls are SOLID but NOT lethal (player can touch/stand on them)
+    - spawns wide overlapping wall segments => solid look
+    - walls are SOLID but NOT lethal (walkable)
     - corridor center drifts smoothly (no abrupt jumps)
     """
 
@@ -15,19 +15,22 @@ class TunnelSpawner:
         self.screen = screen
 
         self.spawn_timer = 0.0
-        self.slice_rate = 0.12      # dense => continuous tunnel look
-        self.slice_width = 50       # small width => smooth corridor
 
         self.base_velocity = 520.0
-        self.gap = 240              # generous early
+        self.gap = 240
+
+        # Wider panels to look solid
+        self.panel_width = 160
+        self.overlap_px = 3  # overlap to hide seams
+        self.panel_rate = 0.20  # chosen so panels overlap at typical speed
 
         H = self.screen.get_height()
         self.gap_center = H // 2
         self.target_center = self.gap_center
 
         self.target_timer = 0.0
-        self.target_interval = 0.60  # how often we adjust direction
-        self.follow = 0.10           # smoothing factor
+        self.target_interval = 0.60
+        self.follow = 0.10
 
     def reset(self) -> None:
         self.spawn_timer = 0.0
@@ -40,10 +43,11 @@ class TunnelSpawner:
         tier = max(0, int(tier))
 
         self.base_velocity = 520.0 + tier * 26.0
-        self.slice_rate = max(0.09, 0.12 - tier * 0.003)
         self.gap = max(160, 240 - tier * 8)
 
-        # slightly more motion later, but still smooth
+        # keep it solid-looking at higher speeds: spawn a bit faster
+        self.panel_rate = max(0.14, 0.20 - tier * 0.004)
+
         self.target_interval = max(0.42, 0.60 - tier * 0.01)
         self.follow = min(0.16, 0.10 + tier * 0.004)
 
@@ -54,45 +58,43 @@ class TunnelSpawner:
         H = self.screen.get_height()
         margin = 80
 
-        # occasionally choose a new target center (bounded, non-abrupt)
         if self.target_timer >= self.target_interval:
             self.target_timer = 0.0
 
             min_c = margin + self.gap // 2
             max_c = (H - margin) - self.gap // 2
 
-            # small step -> prevents teleporting the tunnel
             step = random.randint(-140, 140)
             self.target_center = max(min_c, min(max_c, self.target_center + step))
 
-        # smooth drift
         self.gap_center = int(self.gap_center + (self.target_center - self.gap_center) * self.follow)
 
     def shouldSpawn(self) -> bool:
-        return self.spawn_timer >= self.slice_rate
+        return self.spawn_timer >= self.panel_rate
 
     def spawn(self, tier: int):
         self.setDifficultyTier(tier)
 
         W = self.screen.get_width()
         H = self.screen.get_height()
-        x = W + 20
+
+        # overlap the next segment slightly so it looks continuous
+        x = W + 20 - self.overlap_px
 
         top_h = max(0, self.gap_center - self.gap // 2)
         bot_y = self.gap_center + self.gap // 2
         bot_h = max(0, H - bot_y)
 
-        # Non-lethal SOLID walls
         top_wall = RectObstacle(
             self.screen,
-            pygame.Rect(x, 0, self.slice_width, top_h),
+            pygame.Rect(x, 0, self.panel_width + self.overlap_px, top_h),
             velocity=self.base_velocity,
             color="slategray4",
             lethal=False,
         )
         bottom_wall = RectObstacle(
             self.screen,
-            pygame.Rect(x, bot_y, self.slice_width, bot_h),
+            pygame.Rect(x, bot_y, self.panel_width + self.overlap_px, bot_h),
             velocity=self.base_velocity,
             color="slategray4",
             lethal=False,

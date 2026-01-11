@@ -3,84 +3,79 @@ from enum import Enum
 
 from debugger import Debugger
 
-# ============================= #
-############# TO DO #############
-# ============================= #
 
-# Add difficulty scalling
-# Untine sprite scalling from hitbox
-
-
-# 'Pipe' class declaration and definition
 class Pipe:
-    # Proportions constants
     class Proportions(Enum):
         WIDTH = 110
         BASE_HEIGHT = 125
 
-    # Where pipes should spawn
-    class RelativeOrientation(Enum):
+    class Orientation(Enum):
         TOP = "top"
-        BOT = "bottom"
+        BOTTOM = "bottom"
 
     def __init__(
         self,
         screen: pygame.Surface,
-        currPos: pygame.Vector2,
         velocity: float,
-        orientation,
-        sprite,
-        height=None
+        orientation: str,
+        sprite: pygame.Surface,
+        curr_pos: pygame.Vector2 | None = None,
+        currPos: pygame.Vector2 | None = None,
+        height: int | None = None,
+        width: int | None = None,
     ):
         self.screen = screen
-        self.currPos = currPos
-        self.velocity = velocity
-        self.orientation = orientation
+        self.velocity = float(velocity)
 
-        self.width = Pipe.Proportions.WIDTH.value
-        self.height = height if height is not None else Pipe.Proportions.BASE_HEIGHT.value
+        pos = curr_pos if curr_pos is not None else currPos
+        if pos is None:
+            raise TypeError(
+                "Pipe requires a position: pass curr_pos=... (or legacy currPos=...)"
+            )
+        self.curr_pos = pygame.Vector2(pos)
 
-        self.sprite = pygame.transform.smoothscale(sprite, (self.width, self.height))
+        if isinstance(orientation, Pipe.Orientation):
+            self.orientation = orientation.value
+        else:
+            self.orientation = str(orientation).lower()
 
-        if self.orientation == "top":
-            self.sprite = pygame.transform.flip(self.sprite, False, True)
+        self.width = int(width) if width is not None else Pipe.Proportions.WIDTH.value
+        self.height = (
+            int(height) if height is not None else Pipe.Proportions.BASE_HEIGHT.value
+        )
 
         self.passed = False
 
-    @property
-    def _hitbox(self):
-        return pygame.Rect(
-            self.currPos.x,
-            self.currPos.y,
-            self.width,
-            self.height
-        )
+        self.sprite = pygame.transform.smoothscale(sprite, (self.width, self.height))
+        if self.orientation == Pipe.Orientation.TOP.value:
+            self.sprite = pygame.transform.flip(self.sprite, False, True)
 
     def getHitbox(self) -> pygame.Rect:
-        return self._hitbox
+        hitbox_scale_x = 0.55   # 75% of sprite width
+        hitbox_scale_y = 0.90   # 90% of sprite heigh5
+
+        hb_w = int(self.width * hitbox_scale_x)
+        hb_h = int(self.height * hitbox_scale_y)
+
+        offset_x = (self.width - hb_w) // 2
+        offset_y = (self.height - hb_h) // 2
+
+        return pygame.Rect(
+            self.curr_pos.x + offset_x,
+            self.curr_pos.y + offset_y,
+            hb_w,
+            hb_h,
+        )
 
     def update(self, dt: float) -> None:
-        self.currPos.x -= self.velocity * dt
+        self.curr_pos.x -= self.velocity * dt
 
     def shouldKill(self) -> bool:
-        return self.currPos.x + self.width <= 0
+        return self.curr_pos.x + self.width <= 0
 
-    # Display method
-    def draw(self):
-        # Draw hitbox
+    def draw(self) -> None:
         if Debugger.HITBOXES:
-            pygame.draw.rect(
-                self.screen,
-                "green",
-                (
-                    self.currPos.x,
-                    self.currPos.y,
-                    Pipe.Proportions.WIDTH.value,
-                    Pipe.Proportions.HEIGHT.value,
-                ),
-                2,
-            )
+            pygame.draw.rect(self.screen, "green", self.getHitbox(), 2)
 
-        # Draw sprite
-        rect = self.sprite.get_rect(topleft=self.currPos)
+        rect = self.sprite.get_rect(topleft=self.curr_pos)
         self.screen.blit(self.sprite, rect)

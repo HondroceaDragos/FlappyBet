@@ -1,7 +1,6 @@
 import pygame
 
 from entities import Player
-from entities import PipeFactory
 
 from core import PhysicsEngine
 from core import MainMenuState
@@ -11,18 +10,18 @@ from core import GameOverState
 from core import SlotsState
 
 from sound import SoundManager
-
 from config import SettingsManager
 
+from gameplay.section_manager import SectionManager
+from gameplay.progression import Progression
 
-# 'GameMaster' class declaration and definition
+
 class GameMaster:
     def __init__(
         self,
         screen: pygame.Surface,
         engine: PhysicsEngine = None,
         player: Player = None,
-        factory: PipeFactory = None,
         sound: SoundManager = None,
         running: bool = False,
     ):
@@ -30,16 +29,21 @@ class GameMaster:
         self.engine = engine
 
         self.player = player
-        self.factory = factory
         self.sound = sound
-        self.pipes = []
+
+        # Obstacles & collectibles
+        self.pipes = []   # now: obstacles list (Pipe + RectObstacle)
+        self.coins = []
+
+        # Score is coin-based now
+        self.score = 0
+
+        # New systems
+        self.section_manager = SectionManager(self.screen)
+        self.progression = Progression(self.screen)
 
         self.running = running
 
-        self.passed_count = 0
-        self.score = 0
-
-        # Load all possible states into the master
         self.states = {
             "mainMenu": MainMenuState(self),
             "gameInProgress": GameInProgressState(self),
@@ -49,12 +53,10 @@ class GameMaster:
             
         }
 
-        # Start from main menu
         self._currState = None
         self.switchGameState("mainMenu")
         self.isPaused = False
 
-    # Action may cause game switches
     def switchGameState(self, state: str) -> None:
         if self._currState is self.states.get(state):
             return
@@ -96,25 +98,16 @@ class GameMaster:
             if event.type == pygame.QUIT:
                 self.running = False
             if event.type == pygame.KEYDOWN:
-                # Volume manipulation sanity check
                 match event.key:
                     case pygame.K_e:
                         self.sound.changeSfxVolume(0.2)
-                        SettingsManager.setUserPreferences(
-                            {"sfx": self.sound.sfxVolume}
-                        )
+                        SettingsManager.setUserPreferences({"sfx": self.sound.sfxVolume})
                     case pygame.K_q:
                         self.sound.changeSfxVolume(-0.2)
-                        SettingsManager.setUserPreferences(
-                            {"sfx": self.sound.sfxVolume}
-                        )
+                        SettingsManager.setUserPreferences({"sfx": self.sound.sfxVolume})
                     case pygame.K_d:
                         self.sound.changeMusicVolume(0.2)
-                        SettingsManager.setUserPreferences(
-                            {"music": self.sound.musicVolume}
-                        )
+                        SettingsManager.setUserPreferences({"music": self.sound.musicVolume})
                     case pygame.K_a:
                         self.sound.changeMusicVolume(-0.2)
-                        SettingsManager.setUserPreferences(
-                            {"music": self.sound.musicVolume}
-                        )
+                        SettingsManager.setUserPreferences({"music": self.sound.musicVolume})

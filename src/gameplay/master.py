@@ -6,6 +6,7 @@ from entities import PipeFactory
 from core import PhysicsEngine
 from core import MainMenuState
 from core import GameInProgressState
+from core import PauseMenuState
 
 from sound import SoundManager
 
@@ -37,17 +38,18 @@ class GameMaster:
         self.states = {
             "mainMenu": MainMenuState(self),
             "gameInProgress": GameInProgressState(self),
+            "pauseMenu": PauseMenuState(self),
         }
 
         # Start from main menu
         self._currState = None
         self.switchGameState("mainMenu")
+        self.isPaused = False
 
     # Action may cause game switches
     def switchGameState(self, state: str) -> None:
-        if self._currState == state:
+        if self._currState is self.states.get(state):
             return
-
         if self._currState:
             self._currState.onExit()
         self._currState = self.states[state]

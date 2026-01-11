@@ -7,7 +7,7 @@ class GameInProgressState(absState):
         self.master.sound.playMusic("gameLoop")
 
     def onExit(self):
-        pygame.mixer.music.fadeout(500)
+        pass
 
     def handler(self, events: list[pygame.event.Event]) -> None:
         for event in events:

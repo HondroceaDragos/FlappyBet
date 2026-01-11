@@ -19,7 +19,7 @@ class GameInProgressState(absState):
                         self.master.engine.jump(self.master.player)
                         self.master.sound.playSfx("playerJump")
                     case pygame.K_ESCAPE:
-                        self.master.switchGameState("mainMenu")
+                        self.master.switchGameState("pauseMenu")
 
             if event.type == pygame.KEYUP and event.key == pygame.K_SPACE:
                 self.master.player.jumpPressed = False
@@ -67,7 +67,8 @@ class GameInProgressState(absState):
         self.master.player.animatePlayer()
 
     def update(self) -> None:
-
+        if getattr(self.master, "isPaused", False):
+            return
         self._updateEnv()
         self._updatePlayer()
         self.draw()

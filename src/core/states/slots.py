@@ -6,8 +6,8 @@ from ._abs_state import absState
 class SlotsState(absState):
     # Probabilities
     P_DIAMOND = 0.25
-    P_IRON = 0.60
-    P_BOMB = 0.15
+    P_IRON = 0.55
+    P_BOMB = 0.20
 
     def onEnter(self) -> None:
         # Ensure you have a bank to work with (score from game over)

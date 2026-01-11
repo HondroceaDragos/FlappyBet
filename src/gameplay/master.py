@@ -76,7 +76,6 @@ class GameMaster:
 
         # Reset pipes + spawning timers
         self.pipes.clear()
-        self.factory.dtSpawn = 0.0  # optional; makes spawn timing consistent
 
         # Reset time so dt doesn't spike
         self.engine.resetClock()

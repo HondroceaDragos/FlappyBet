@@ -1,7 +1,3 @@
-# =========================
-# MODIFY FILE: src/main.py
-# (minimal changes: remove PipeFactory creation; master no longer needs it)
-# =========================
 import os
 os.environ["PYGAME_HIDE_SUPPORT_PROMPT"] = "1"
 
@@ -32,8 +28,13 @@ player = Player(screen=vScreen, radius=35)
 engine = PhysicsEngine(screen=vScreen, dt=0)
 sound = SoundManager()
 
-# factory is now unused; pass None
-gameMaster = GameMaster(vScreen, engine, player, None, sound, True)
+gameMaster = GameMaster(
+    screen=vScreen,
+    engine=engine,
+    player=player,
+    sound=sound,
+    running=True
+)
 
 if Debugger.STATE:
     gameMaster.switchGameState(Debugger.STATE)

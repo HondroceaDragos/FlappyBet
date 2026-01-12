@@ -67,6 +67,33 @@ class PhysicsEngine:
         dy = circleCenter.y - max(rect.top, min(circleCenter.y, rect.bottom))
 
         return (dx * dx + dy * dy) < (circleRadius * circleRadius)
+    
+    def resolveSolidCircleRectVerticalOnly(self, player: Player, rect: pygame.Rect) -> None:
+        """
+        Resolve circle-rect overlap by moving player only in Y.
+        This prevents 'phasing' up onto higher blocks when bumping their side.
+        """
+        center, radius = player.getHitbox()
+
+        # Closest point
+        closest_x = max(rect.left, min(center.x, rect.right))
+        closest_y = max(rect.top, min(center.y, rect.bottom))
+
+        dx = center.x - closest_x
+        dy = center.y - closest_y
+
+        if (dx * dx + dy * dy) >= (radius * radius):
+            return  # no overlap
+
+        # If player is above the rect, clamp to top; otherwise clamp to bottom.
+        if center.y < rect.centery:
+            player.currPos.y = rect.top - radius
+            if player.velocity.y > 0:
+                player.velocity.y = 0
+        else:
+            player.currPos.y = rect.bottom + radius
+            if player.velocity.y < 0:
+                player.velocity.y = 0
 
     def resolveSolidCircleRect(self, player: Player, rect: pygame.Rect) -> None:
         """

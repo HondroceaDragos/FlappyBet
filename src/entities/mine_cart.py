@@ -1,6 +1,3 @@
-# =========================
-# FILE: src/entities/mine_cart.py
-# =========================
 import pygame
 from debugger import Debugger
 

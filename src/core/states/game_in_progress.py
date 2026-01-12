@@ -1,6 +1,3 @@
-# =========================
-# FILE: src/core/states/game_in_progress.py
-# =========================
 import pygame
 from ._abs_state import absState
 

@@ -1,6 +1,3 @@
-# =========================
-# FILE: src/gameplay/spawners/beams_spawner.py
-# =========================
 import random
 import pygame
 from entities import RectObstacle, Coin

@@ -1,7 +1,3 @@
-# =========================
-# FILE: src/gameplay/section_manager.py
-# (HazardPatch removed; section-level lava is handled by checking current section)
-# =========================
 import random
 import pygame
 

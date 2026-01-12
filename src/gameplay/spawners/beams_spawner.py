@@ -58,8 +58,8 @@ class BeamsSpawner:
         self.beam_thick = 40
 
         # Smooth movement controls (updated by tier)
-        self.min_center_step = 20   # <-- tweak: minimum movement per beam
-        self.max_center_step = 75   # <-- tweak: maximum movement per beam
+        self.min_center_step = 150   # <-- tweak: minimum movement per beam
+        self.max_center_step = 300   # <-- tweak: maximum movement per beam
 
         # Remember last step so we don't repeat it
         self._last_step: int | None = None

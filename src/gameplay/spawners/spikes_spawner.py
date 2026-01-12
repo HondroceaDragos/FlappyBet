@@ -227,6 +227,9 @@ class SpikesSpawner:
         # hazard_intensity kept for compatibility (not used for lava anymore)
         self.hazard_intensity = 0.0
 
+    def setWorldSpeed(self, world_speed: float) -> None:
+        self.base_velocity = float(world_speed)
+
     def reset(self) -> None:
         self.spawn_timer = 0.0
         self.curr_pattern = random.choice(self.spawn_patterns)
@@ -240,7 +243,6 @@ class SpikesSpawner:
 
     def setDifficultyTier(self, tier: int) -> None:
         tier = max(0, int(tier))
-        self.base_velocity = 500.0 + tier * 35.0
         self.spawn_rate = max(0.55, 0.85 - tier * 0.03)
 
         # Slightly more big spikes later (cap)

@@ -16,10 +16,15 @@ class Progression:
         # 0..1
         self.hazard_intensity = 0.0
 
+        self.world_speed = 520.0          # starting speed
+        self.world_speed_max = 820.0      # cap (tweak)
+        self.speed_ramp_per_sec = 0.1     # ramp rate (tweak)
+
     def reset(self) -> None:
         self.time_alive = 0.0
         self.coins_collected = 0
         self.hazard_intensity = 0.0
+        self.world_speed = 520.0
 
     def addCoins(self, n: int) -> None:
         self.coins_collected += int(n)
@@ -34,3 +39,9 @@ class Progression:
         # hazard_intensity goes 0 -> ~1 smoothly
         self.hazard_intensity = 1.0 - math.exp(-t)
         self.hazard_intensity = max(0.0, min(1.0, self.hazard_intensity))
+
+        self.world_speed = min(
+            self.world_speed_max,
+            self.world_speed + self.speed_ramp_per_sec * dt
+        )
+

@@ -74,8 +74,10 @@ class GameInProgressState(absState):
 
         # Spawn
         new_obs, new_coins = self.master.section_manager.maybe_spawn(
-            hazard_intensity=self.master.progression.hazard_intensity
+            hazard_intensity=self.master.progression.hazard_intensity,
+            world_speed=self.master.progression.world_speed
         )
+
         if new_obs:
             self.master.pipes.extend(new_obs)
         if new_coins:
